@@ -3,7 +3,7 @@ package mail_test
 import (
 	"testing"
 
-	"github.com/emersion/go-message/mail"
+	"github.com/mirrorweb/go-message/mail"
 )
 
 func TestAttachmentHeader_Filename(t *testing.T) {

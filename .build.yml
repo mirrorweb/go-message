@@ -2,7 +2,7 @@ image: alpine/edge
 packages:
   - go
 sources:
-  - https://github.com/emersion/go-message
+  - https://github.com/mirrorweb/go-message
 artifacts:
   - coverage.html
 tasks:

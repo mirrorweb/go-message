@@ -7,7 +7,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/emersion/go-message/textproto"
+	"github.com/mirrorweb/go-message/textproto"
 )
 
 // An Entity is either a whole message or a one of the parts in the body of a
