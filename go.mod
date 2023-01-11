@@ -1,4 +1,4 @@
-module github.com/emersion/go-message
+module github.com/mirrorweb/go-message
 
 go 1.14
 
