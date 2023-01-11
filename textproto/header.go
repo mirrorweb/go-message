@@ -8,6 +8,7 @@ import (
 	"net/textproto"
 	"sort"
 	"strings"
+	"unicode/utf8"
 )
 
 type headerField struct {
@@ -546,15 +547,20 @@ func ReadHeader(r *bufio.Reader) (Header, error) {
 
 		keyBytes := trim(kv[:i])
 
+		asciiKey := stripNonASCIIPrefix(keyBytes)
+		if len(keyBytes) == 0 {
+			return newHeader(fs), fmt.Errorf("message: malformed MIME header key: %v", string(keyBytes))
+		}
+
 		// Verify that there are no invalid characters in the header key.
 		// See RFC 5322 Section 2.2
-		for _, c := range keyBytes {
+		for _, c := range asciiKey {
 			if !validHeaderKeyByte(c) {
-				return newHeader(fs), fmt.Errorf("message: malformed MIME header key: %v", string(keyBytes))
+				return newHeader(fs), fmt.Errorf("message: malformed MIME header key: %v", string(asciiKey))
 			}
 		}
 
-		key := textproto.CanonicalMIMEHeaderKey(string(keyBytes))
+		key := textproto.CanonicalMIMEHeaderKey(string(asciiKey))
 
 		// As per RFC 7230 field-name is a token, tokens consist of one or more
 		// chars. We could return a an error here, but better to be liberal in
@@ -674,4 +680,18 @@ func WriteHeader(w io.Writer, h Header) error {
 
 	_, err := w.Write([]byte{'\r', '\n'})
 	return err
+}
+
+// stripNonASCIIPrefix removes any character from the start of a byte slice that
+// is reported to be outside the ASCII byte range. If the byte slice is entirely
+// non-ASCII chars it will return a size 0 slice.
+func stripNonASCIIPrefix(b []byte) []byte {
+	for len(b) > 0 {
+		r, size := utf8.DecodeRune(b)
+		if validHeaderKeyByte(byte(r)) {
+			return b
+		}
+		b = b[size:]
+	}
+	return b
 }
