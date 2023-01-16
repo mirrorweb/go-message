@@ -119,7 +119,10 @@ func isAtext(r rune, dot bool) bool {
 	case '.':
 		return dot
 	// RFC 5322 3.2.3 specials
-	case '(', ')', '[', ']', ';', '@', '\\', ',':
+	// MW specific
+	// '[', ']' removed RFC 5322 3.2.3 special characters
+	// because it appears in atext
+	case '(', ')', ';', '@', '\\', ',':
 		return false
 	case '<', '>', '"', ':':
 		return false
