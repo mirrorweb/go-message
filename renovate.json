@@ -1,0 +1,14 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>mirrorweb/renovate-config"
+  ],
+  "reviewers": [
+    "team:developers",
+    "team:devops"
+  ],
+  "schedule": [
+    "after 10pm every weekday, before 5am every weekday",
+    "every weekend"
+  ]
+}
