@@ -27,19 +27,25 @@ func IsUnknownEncoding(err error) bool {
 }
 
 func encodingReader(enc string, r io.Reader) (io.Reader, error) {
-	var dec io.Reader
+	switch strings.ToLower(enc) {
+	case "7bit", "8bit", "binary", "":
+		return r, nil
+	}
+
+	bufReader := NewBufferingReader(r)
+	var decoder io.Reader
+
 	switch strings.ToLower(enc) {
 	case "quoted-printable":
-		dec = quotedprintable.NewReader(r)
+		decoder = quotedprintable.NewReader(bufReader)
 	case "base64":
-		wrapped := &whitespaceReplacingReader{wrapped: r}
-		dec = base64.NewDecoder(base64.StdEncoding, wrapped)
-	case "7bit", "8bit", "binary", "":
-		dec = r
+		wrapped := &whitespaceReplacingReader{wrapped: bufReader}
+		decoder = base64.NewDecoder(base64.StdEncoding, wrapped)
 	default:
-		return nil, fmt.Errorf("unhandled encoding %q", enc)
+		return bufReader, nil
 	}
-	return dec, nil
+
+	return NewRecoverableReader(decoder, bufReader), nil
 }
 
 type nopCloser struct {
