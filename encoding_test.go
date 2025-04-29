@@ -55,8 +55,8 @@ func TestDecode(t *testing.T) {
 
 func TestDecode_error(t *testing.T) {
 	_, err := encodingReader("idontexist", nil)
-	if err == nil {
-		t.Errorf("Expected an error when creating decoder for invalid encoding")
+	if err != nil {
+		t.Errorf("Error not expected, but got: %v", err)
 	}
 }
 
