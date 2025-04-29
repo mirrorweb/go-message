@@ -6,3 +6,7 @@ import "github.com/mirrorweb/go-message"
 type InlineHeader struct {
 	message.Header
 }
+
+var _ PartHeader = (*InlineHeader)(nil)
+
+func (*InlineHeader) partHeader() {}

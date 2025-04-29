@@ -103,7 +103,7 @@ func HeaderFromMap(m map[string][]string) Header {
 // AddRaw adds the raw key, value pair to the header.
 //
 // The supplied byte slice should be a complete field in the "Key: Value" form
-// including trailing CRLF. If there is no comma in the input - AddRaw panics.
+// including trailing CRLF. If there is no colon in the input - AddRaw panics.
 // No changes are made to kv contents and it will be copied into WriteHeader
 // output as is.
 //
@@ -262,12 +262,16 @@ type HeaderFields interface {
 	// For Fields(), it will return the amount of fields in the whole header section.
 	// For FieldsByKey(), it will return the amount of fields with certain key.
 	Len() int
+
+	headerFields()
 }
 
 type headerFields struct {
 	h   *Header
 	cur int
 }
+
+func (*headerFields) headerFields() {}
 
 func (fs *headerFields) Next() bool {
 	fs.cur++
@@ -338,6 +342,8 @@ type headerFieldsByKey struct {
 	k   string
 	cur int
 }
+
+func (*headerFieldsByKey) headerFields() {}
 
 func (fs *headerFieldsByKey) Next() bool {
 	fs.cur++
